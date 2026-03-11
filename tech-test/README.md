@@ -4,130 +4,138 @@
 ## Test 2: CSS ✅
 ## Test 3: JavaScript ✅
 ## Test 4: TypeScript ✅
+## Test 5: React ✅
 
-### What's Tested (TypeScript)
+### What's Tested (React)
 
-**TypeScript Architecture:**
-- Strict type checking enabled
-- Interfaces for data structures
-- Enums for constants
-- Type guards for runtime validation
-- Type-safe DOM manipulation
+**React Architecture:**
+- Component-based architecture
+- React Hooks (useState, useEffect, useMemo, useCallback, useRef)
+- Custom hooks for reusability
+- Virtual DOM for performance
+- Declarative UI patterns
 
-**TypeScript Features Demonstrated:**
+**React Features Demonstrated:**
 
-**Type System:**
-- `interface Task` — Core task data structure
-- `interface StorageData` — Local storage schema
-- `interface TaskStatistics` — Statistics data
-- `enum Priority` — Priority levels (Low, Normal, High)
-- `type FilterType` — Filter union type
-- Type guards (`isTask`, `isStorageData`)
+**Core Hooks:**
+- `useState` — Component state management
+- `useEffect` — Side effects and lifecycle
+- `useMemo` — Memoized computations
+- `useCallback` — Optimized event handlers
+- `useRef` — DOM references and persisting values
 
-**Type Safety:**
-- Compile-time error catching
-- Null checks throughout
-- Type assertions where needed
-- Strict mode enabled
-- No implicit any
+**Custom Hooks:**
+- `useLocalStorage` — Persistent state with localStorage
+- `useTaskManager` — Task management logic encapsulation
 
-**Advanced TypeScript:**
-- Type guards for runtime validation
-- Data versioning and migration
-- Interface inheritance
-- Generic constraints
-- Union types
-- Literal types
+**Component Structure:**
+- `<App>` — Main container component
+- `<Header>` — Header display
+- `<TaskForm>` — Add new tasks
+- `<FilterControls>` — Filter tabs
+- `<TaskList>` — Task list container
+- `<TaskItem>` — Individual task
+- `<TaskStats>` — Statistics display
+- `<Footer>` — Footer
 
-**Type-Safe DOM:**
-- `HTMLFormElement`, `HTMLInputElement`, `HTMLUListElement`
-- Typed element references
-- DOM validation at startup
-- Type-safe event handlers
+**React Patterns:**
+- State lifting (child to parent communication)
+- Props drilling (controlled components)
+- Conditional rendering
+- List rendering with keys
+- Event handling with React
+- Double-click to edit pattern
 
-**New Features (TypeScript Edition):**
-- **Priority levels** — Low (green), Normal (blue), High (red)
-- Priority dropdown per task
-- Color-coded priority indicators
-- Data versioning system (v2)
-- Migration support for old data
+**Performance Optimizations:**
+- `useCallback` — Prevent unnecessary re-renders
+- `useMemo` — Cache expensive computations
+- Component memoization opportunities
+- Key props for list items
 
-**TypeScript Benefits:**
-- Better IDE autocomplete
-- Catch bugs before runtime
-- Self-documenting code
-- Safer refactoring
-- Better developer experience
+**Declarative vs Imperative:**
 
-### Building the Project
-
-```bash
-# Install dependencies
-npm install
-
-# Install TypeScript (dev dependency)
-npm install -D typescript
-
-# Compile TypeScript to JavaScript
-npx tsc
-
-# The compiled output goes to dist/app.js
+**Before (Imperative - JavaScript/TypeScript):**
+```javascript
+const li = document.querySelector(`li[data-id="${id}"]`);
+li.classList.add('completed');
 ```
+
+**After (Declarative - React):**
+```jsx
+<TaskItem completed={task.completed} />
+```
+
+**React-Specific Features:**
+- Double-click to edit tasks
+- Auto-focus edit input
+- Enter to save, Escape to cancel
+- Real-time statistics updates
+- Optimized re-renders
 
 ### How to View
 
 ```bash
-# Clone the repo
+# Clone repo
 git clone https://github.com/kfxrich/tech-test.git
 cd tech-test
 
-# Build TypeScript
-npm install
-npx tsc
-
-# Open in browser
-open index.html
+# Open React version in browser
+open react.html
 ```
 
-### TypeScript Project Structure
+### React Dependencies (CDN)
 
-```
-tech-test/
-├── tsconfig.json       # TypeScript configuration
-├── src/
-│   └── app.ts        # TypeScript source code
-├── dist/
-│   └── app.js        # Compiled JavaScript
-├── index.html        # Main HTML (loads dist/app.js)
-├── styles.css        # Styling
-└── README.md        # Documentation
+```html
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 ```
 
-### TypeScript Configuration Highlights
+### React File Structure
 
-```json
-{
-  "compilerOptions": {
-    "strict": true,           // Enable strict type checking
-    "target": "ES2020",      // Modern JavaScript features
-    "module": "ESNext",      // ES module support
-    "declaration": true,      // Generate .d.ts files
-    "sourceMap": true        // Debug source maps
-  }
-}
 ```
+react.html (Single-file React app)
+├── Components
+│   ├── App
+│   ├── Header
+│   ├── TaskForm
+│   ├── FilterControls
+│   ├── TaskList
+│   ├── TaskItem
+│   ├── TaskStats
+│   └── Footer
+├── Custom Hooks
+│   ├── useLocalStorage
+│   └── useTaskManager
+└── Main Logic
+    └── createRoot + render
+```
+
+### Key React Concepts Demonstrated
+
+| Concept | Description | Implementation |
+|----------|-------------|----------------|
+| **State** | Component state | `useState` hook |
+| **Effects** | Side effects | `useEffect` hook |
+| **Memoization** | Performance | `useMemo`, `useCallback` |
+| **Refs** | DOM access | `useRef` hook |
+| **Custom Hooks** | Logic reuse | `useLocalStorage`, `useTaskManager` |
+| **Props** | Data flow | Props drilling |
+| **Events** | User interaction | React event handlers |
+| **Keys** | List optimization | `key={task.id}` |
 
 ### Next Test
 
-**React** → Component-based architecture, virtual DOM, hooks
+**Tailwind CSS** → Utility-first styling, rapid development, responsive design
 
-### Comparison: JavaScript vs TypeScript
+### Comparison: JavaScript/TypeScript vs React
 
-| Aspect | JavaScript | TypeScript |
-|--------|-----------|-------------|
-| Type Safety | Runtime errors only | Compile-time checking |
-| IDE Support | Basic autocomplete | Full IntelliSense |
-| Refactoring | Risky | Type-safe |
-| Documentation | Comments needed | Self-documenting |
-| Learning Curve | Low | Medium |
-| Debugging | Stack traces only | Source maps + types |
+| Aspect | JS/TS | React |
+|--------|----------|-------|
+| **UI Updates** | Manual DOM manipulation | Declarative, automatic |
+| **State** | Variables + manual updates | `useState` hook |
+| **Components** | Functions | JSX components |
+| **Reusability** | Functions | Custom hooks + components |
+| **Learning Curve** | Lower | Higher |
+| **Performance** | Manual optimization | Virtual DOM + automatic |
+| **Tooling** | Simple | Build tools (Vite, CRA, Next) |

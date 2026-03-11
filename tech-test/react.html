@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A React-based task manager demonstrating hooks, components, and virtual DOM">
+    <title>Task Manager - Test 5: React</title>
+    <link rel="stylesheet" href="styles.css">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-presets="react,stage-3">
+        // ============================================
+        // Task Manager - Test 5: React
+        // Component-based architecture with hooks
+        // ============================================
+
+        const { useState, useEffect, useMemo, useCallback, useRef, createContext, useContext } = React;
+        const { createRoot } = ReactDOM;
+
+        // ============================================
+        // Constants & Types
+        // ============================================
+
+        const STORAGE_KEY = 'task-manager-tasks-react';
+        const Priority = {
+            Low: 'low',
+            Normal: 'normal',
+            High: 'high'
+        };
+
+        const PriorityColors = {
+            [Priority.Low]: '#10b981',
+            [Priority.Normal]: '#3b82f6',
+            [Priority.High]: '#ef4444'
+        };
+
+        // ============================================
+        // Custom Hook: useLocalStorage
+        // ============================================
+
+        function useLocalStorage(key, initialValue) {
+            const [storedValue, setStoredValue] = useState(() => {
+                try {
+                    const item = localStorage.getItem(key);
+                    return item ? JSON.parse(item) : initialValue;
+                } catch (error) {
+                    console.error(`Error loading ${key}:`, error);
+                    return initialValue;
+                }
+            });
+
+            const setValue = useCallback((value) => {
+                try {
+                    const valueToStore = value instanceof Function ? value(storedValue) : value;
+                    setStoredValue(valueToStore);
+                    localStorage.setItem(key, JSON.stringify(valueToStore));
+                } catch (error) {
+                    console.error(`Error saving ${key}:`, error);
+                }
+            }, [key, storedValue]);
+
+            return [storedValue, setValue];
+        }
+
+        // ============================================
+        // Custom Hook: useTaskManager
+        // ============================================
+
+        function useTaskManager() {
+            const [tasks, setTasks] = useLocalStorage(STORAGE_KEY, []);
+
+            const addTask = useCallback((text, priority = Priority.Normal) => {
+                const newTask = {
+                    id: Date.now(),
+                    text: text.trim(),
+                    completed: false,
+                    priority,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                setTasks(prev => [newTask, ...prev]);
+            }, []);
+
+            const deleteTask = useCallback((id) => {
+                setTasks(prev => prev.filter(task => task.id !== id));
+            }, []);
+
+            const toggleTask = useCallback((id) => {
+                setTasks(prev => prev.map(task => 
+                    task.id === id 
+                        ? { ...task, completed: !task.completed, updatedAt: new Date().toISOString() }
+                        : task
+                ));
+            }, []);
+
+            const editTask = useCallback((id, newText) => {
+                setTasks(prev => prev.map(task => 
+                    task.id === id && newText.trim()
+                        ? { ...task, text: newText.trim(), updatedAt: new Date().toISOString() }
+                        : task
+                ));
+            }, []);
+
+            const setPriority = useCallback((id, priority) => {
+                setTasks(prev => prev.map(task => 
+                    task.id === id
+                        ? { ...task, priority, updatedAt: new Date().toISOString() }
+                        : task
+                ));
+            }, []);
+
+            const clearCompleted = useCallback(() => {
+                setTasks(prev => prev.filter(task => !task.completed));
+            }, []);
+
+            const statistics = useMemo(() => {
+                const total = tasks.length;
+                const completed = tasks.filter(t => t.completed).length;
+                const active = total - completed;
+                const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+                return { total, completed, active, percentage };
+            }, [tasks]);
+
+            const filteredTasks = useCallback((filter) => {
+                switch (filter) {
+                    case 'active':
+                        return tasks.filter(t => !t.completed);
+                    case 'completed':
+                        return tasks.filter(t => t.completed);
+                    default:
+                        return tasks;
+                }
+            }, [tasks]);
+
+            return {
+                tasks,
+                addTask,
+                deleteTask,
+                toggleTask,
+                editTask,
+                setPriority,
+                clearCompleted,
+                statistics,
+                filteredTasks
+            };
+        }
+
+        // ============================================
+        // Component: Header
+        // ============================================
+
+        function Header() {
+            return (
+                <header>
+                    <h1>📋 Task Manager</h1>
+                    <p>Test 5: React - Component-based architecture</p>
+                </header>
+            );
+        }
+
+        // ============================================
+        // Component: TaskForm
+        // ============================================
+
+        function TaskForm({ onAdd }) {
+            const [input, setInput] = useState('');
+            const inputRef = useRef(null);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (input.trim()) {
+                    onAdd(input, Priority.Normal);
+                    setInput('');
+                }
+            };
+
+            const handleKeyDown = (e) => {
+                if (e.key === 'Escape') {
+                    setInput('');
+                }
+            };
+
+            return (
+                <section aria-label="Add new task">
+                    <form onSubmit={handleSubmit}>
+                        <div className="input-group">
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                placeholder="What needs to be done? (Press Enter to add)"
+                                required
+                                autoComplete="off"
+                                aria-label="New task description"
+                            />
+                            <button type="submit">Add Task</button>
+                        </div>
+                    </form>
+                    <div className="shortcuts">
+                        <span className="shortcut">Esc</span> Clear input
+                        <span className="shortcut">Enter</span> Add task
+                    </div>
+                </section>
+            );
+        }
+
+        // ============================================
+        // Component: FilterControls
+        // ============================================
+
+        function FilterControls({ filter, onFilterChange }) {
+            return (
+                <div className="task-controls">
+                    {['all', 'active', 'completed'].map(f => (
+                        <button
+                            key={f}
+                            className={`filter-btn ${filter === f ? 'active' : ''}`}
+                            onClick={() => onFilterChange(f)}
+                        >
+                            {f.charAt(0).toUpperCase() + f.slice(1)}
+                        </button>
+                    ))}
+                </div>
+            );
+        }
+
+        // ============================================
+        // Component: TaskItem
+        // ============================================
+
+        function TaskItem({ task, onToggle, onDelete, onEdit, onPriorityChange, editingId, setEditingId }) {
+            const [editText, setEditText] = useState(task.text);
+            const isEditing = editingId === task.id;
+            const editRef = useRef(null);
+
+            useEffect(() => {
+                if (isEditing && editRef.current) {
+                    editRef.current.focus();
+                    editRef.current.select();
+                }
+            }, [isEditing]);
+
+            const handleEditStart = () => {
+                setEditingId(task.id);
+                setEditText(task.text);
+            };
+
+            const handleEditSave = () => {
+                if (editText.trim()) {
+                    onEdit(task.id, editText.trim());
+                }
+                setEditingId(null);
+            };
+
+            const handleEditCancel = () => {
+                setEditingId(null);
+                setEditText(task.text);
+            };
+
+            const handleKeyDown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleEditSave();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    handleEditCancel();
+                }
+            };
+
+            return (
+                <li 
+                    className={`${task.completed ? 'completed' : ''}`} 
+                    data-id={task.id}
+                    tabIndex={0}
+                >
+                    <div className="task-item-content">
+                        <div 
+                            className="task-priority" 
+                            style={{ backgroundColor: PriorityColors[task.priority] }}
+                        />
+                        <input
+                            type="checkbox"
+                            className="task-checkbox"
+                            checked={task.completed}
+                            onChange={() => onToggle(task.id)}
+                            aria-label={`Mark ${task.text} as ${task.completed ? 'incomplete' : 'complete'}`}
+                        />
+                        {isEditing ? (
+                            <input
+                                ref={editRef}
+                                type="text"
+                                value={editText}
+                                onChange={(e) => setEditText(e.target.value)}
+                                onBlur={handleEditSave}
+                                onKeyDown={handleKeyDown}
+                                className="task-edit-input"
+                                style={{
+                                    outline: '2px solid #007AFF',
+                                    background: 'white',
+                                    padding: '0.25rem 0.5rem',
+                                    borderRadius: '4px',
+                                    border: '2px solid #007AFF',
+                                    fontSize: '0.875rem'
+                                }}
+                            />
+                        ) : (
+                            <span 
+                                className={`task-item-text ${task.completed ? 'completed' : ''}`}
+                                onDoubleClick={handleEditStart}
+                            >
+                                {task.text}
+                            </span>
+                        )}
+                    </div>
+                    <div className="task-actions">
+                        {!isEditing && (
+                            <>
+                                <select
+                                    className="priority-select"
+                                    value={task.priority}
+                                    onChange={(e) => onPriorityChange(task.id, e.target.value)}
+                                >
+                                    <option value={Priority.Low}>Low</option>
+                                    <option value={Priority.Normal}>Normal</option>
+                                    <option value={Priority.High}>High</option>
+                                </select>
+                                <button 
+                                    className="edit-btn" 
+                                    onClick={handleEditStart}
+                                    title="Edit"
+                                >
+                                    ✏️
+                                </button>
+                            </>
+                        )}
+                        <button 
+                            className="delete-btn" 
+                            onClick={() => onDelete(task.id)}
+                            title="Delete"
+                        >
+                            🗑️
+                        </button>
+                    </div>
+                </li>
+            );
+        }
+
+        // ============================================
+        // Component: TaskList
+        // ============================================
+
+        function TaskList({ tasks, onToggle, onDelete, onEdit, onPriorityChange }) {
+            const [editingId, setEditingId] = useState(null);
+
+            if (tasks.length === 0) {
+                return (
+                    <ul>
+                        <li className="empty">
+                            {tasks === null 
+                                ? 'No tasks yet. Add one above!' 
+                                : tasks.filter(t => !t.completed).length === 0 && tasks.filter(t => t.completed).length > 0
+                                    ? 'No active tasks. Great job!'
+                                    : 'No completed tasks yet.'
+                            }
+                        </li>
+                    </ul>
+                );
+            }
+
+            return (
+                <ul>
+                    {tasks.map(task => (
+                        <TaskItem
+                            key={task.id}
+                            task={task}
+                            onToggle={onToggle}
+                            onDelete={onDelete}
+                            onEdit={onEdit}
+                            onPriorityChange={onPriorityChange}
+                            editingId={editingId}
+                            setEditingId={setEditingId}
+                        />
+                    ))}
+                </ul>
+            );
+        }
+
+        // ============================================
+        // Component: TaskStats
+        // ============================================
+
+        function TaskStats({ statistics }) {
+            return (
+                <div className="task-stats">
+                    <span className="stat-item">{statistics.active} active</span>
+                    <span className="stat-item">{statistics.completed} completed</span>
+                    <span className="stat-item">{statistics.percentage}% done</span>
+                </div>
+            );
+        }
+
+        // ============================================
+        // Component: Footer
+        // ============================================
+
+        function Footer() {
+            return (
+                <footer>
+                    <p>Next: Tailwind → Next.js → Node.js → Prisma</p>
+                </footer>
+            );
+        }
+
+        // ============================================
+        // Main App Component
+        // ============================================
+
+        function App() {
+            const [filter, setFilter] = useState('all');
+            const {
+                tasks,
+                addTask,
+                deleteTask,
+                toggleTask,
+                editTask,
+                setPriority,
+                statistics,
+                filteredTasks
+            } = useTaskManager();
+
+            const currentTasks = useMemo(() => filteredTasks(filter), [filteredTasks, filter]);
+
+            const handleClearCompleted = useCallback(() => {
+                const completedCount = tasks.filter(t => t.completed).length;
+                if (completedCount > 0) {
+                    setTasks(prev => prev.filter(task => !task.completed));
+                    alert(`Cleared ${completedCount} completed tasks`);
+                }
+            }, [tasks]);
+
+            return (
+                <div className="container">
+                    <Header />
+                    <TaskForm onAdd={addTask} />
+                    <section aria-label="Task list">
+                        <FilterControls filter={filter} onFilterChange={setFilter} />
+                        <TaskList
+                            tasks={currentTasks}
+                            onToggle={toggleTask}
+                            onDelete={deleteTask}
+                            onEdit={editTask}
+                            onPriorityChange={setPriority}
+                        />
+                        <TaskStats statistics={statistics} />
+                    </section>
+                    <Footer />
+                </div>
+            );
+        }
+
+        // ============================================
+        // Render App
+        // ============================================
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+
+    <style>
+        /* React-specific styles */
+        .task-edit-input {
+            font-family: inherit;
+            width: 100%;
+            border: 2px solid #007AFF;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .task-item-text:hover {
+            cursor: pointer;
+            opacity: 0.8;
+        }
+    </style>
+</body>
+</html>
