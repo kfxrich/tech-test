@@ -3,93 +3,131 @@
 ## Test 1: HTML ✅
 ## Test 2: CSS ✅
 ## Test 3: JavaScript ✅
+## Test 4: TypeScript ✅
 
-### What's Tested (JavaScript)
+### What's Tested (TypeScript)
 
-**JavaScript Architecture:**
-- State management with in-memory state
-- Local storage persistence
-- Event-driven architecture
-- Modular function design
-- Clean separation of concerns
+**TypeScript Architecture:**
+- Strict type checking enabled
+- Interfaces for data structures
+- Enums for constants
+- Type guards for runtime validation
+- Type-safe DOM manipulation
 
-**JavaScript Features Demonstrated:**
+**TypeScript Features Demonstrated:**
 
-**State Management:**
-- Centralized `tasks` array
-- Filter state (`all`, `active`, `completed`)
-- Reactive rendering pattern
+**Type System:**
+- `interface Task` — Core task data structure
+- `interface StorageData` — Local storage schema
+- `interface TaskStatistics` — Statistics data
+- `enum Priority` — Priority levels (Low, Normal, High)
+- `type FilterType` — Filter union type
+- Type guards (`isTask`, `isStorageData`)
 
-**Local Storage:**
-- Save tasks to `localStorage`
-- Load tasks on page load
-- Graceful error handling for quota exceeded
+**Type Safety:**
+- Compile-time error catching
+- Null checks throughout
+- Type assertions where needed
+- Strict mode enabled
+- No implicit any
 
-**Task Operations:**
-- `addTask(text)` — Create new task
-- `deleteTask(id)` — Remove task
-- `toggleTask(id)` — Mark complete/incomplete
-- `editTask(id, newText)` — Update task text
-- `clearCompleted()` — Bulk delete completed tasks
+**Advanced TypeScript:**
+- Type guards for runtime validation
+- Data versioning and migration
+- Interface inheritance
+- Generic constraints
+- Union types
+- Literal types
 
-**Rendering System:**
-- Filter-based task display
-- Dynamic HTML generation with template literals
-- Real-time statistics (active, completed, percentage)
-- Empty state messages
+**Type-Safe DOM:**
+- `HTMLFormElement`, `HTMLInputElement`, `HTMLUListElement`
+- Typed element references
+- DOM validation at startup
+- Type-safe event handlers
 
-**Keyboard Shortcuts:**
-- `Enter` — Add task
-- `Escape` — Clear input
-- `↑/↓` — Navigate tasks (tab index 0)
-- `Enter/Space` — Toggle checkbox
-- `E` — Edit task
-- `D` — Delete task
+**New Features (TypeScript Edition):**
+- **Priority levels** — Low (green), Normal (blue), High (red)
+- Priority dropdown per task
+- Color-coded priority indicators
+- Data versioning system (v2)
+- Migration support for old data
 
-**Edit Functionality:**
-- Inline editing with `contenteditable`
-- Save on Enter or blur
-- Cancel on Escape
-- Select all text on edit start
+**TypeScript Benefits:**
+- Better IDE autocomplete
+- Catch bugs before runtime
+- Self-documenting code
+- Safer refactoring
+- Better developer experience
 
-**UI Features:**
-- Toast notifications
-- Filter buttons (All, Active, Completed)
-- Task statistics footer
-- Checkbox for completion
-- Edit and delete buttons per task
+### Building the Project
 
-**Event Listeners:**
-- Form submit
-- Keyboard shortcuts (document-level)
-- Filter buttons
-- Task list interactions
-- Edit mode handling
+```bash
+# Install dependencies
+npm install
 
-**Security:**
-- XSS protection via `escapeHtml()` function
-- Input validation and sanitization
+# Install TypeScript (dev dependency)
+npm install -D typescript
 
-**Performance:**
-- Efficient DOM updates (batched re-renders)
-- Local storage for instant load
-- Minimal reflows/repaints
+# Compile TypeScript to JavaScript
+npx tsc
 
-### Keyboard Shortcuts Reference
-
-| Key | Action |
-|-----|--------|
-| `Enter` | Add task / Toggle completion |
-| `Escape` | Clear input / Cancel edit |
-| `E` | Edit focused task |
-| `D` | Delete focused task |
+# The compiled output goes to dist/app.js
+```
 
 ### How to View
+
 ```bash
+# Clone the repo
 git clone https://github.com/kfxrich/tech-test.git
-cd tech-test/tech-test
+cd tech-test
+
+# Build TypeScript
+npm install
+npx tsc
+
+# Open in browser
 open index.html
 ```
 
+### TypeScript Project Structure
+
+```
+tech-test/
+├── tsconfig.json       # TypeScript configuration
+├── src/
+│   └── app.ts        # TypeScript source code
+├── dist/
+│   └── app.js        # Compiled JavaScript
+├── index.html        # Main HTML (loads dist/app.js)
+├── styles.css        # Styling
+└── README.md        # Documentation
+```
+
+### TypeScript Configuration Highlights
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,           // Enable strict type checking
+    "target": "ES2020",      // Modern JavaScript features
+    "module": "ESNext",      // ES module support
+    "declaration": true,      // Generate .d.ts files
+    "sourceMap": true        // Debug source maps
+  }
+}
+```
+
 ### Next Test
-**TypeScript** → Add type safety, interfaces, better developer experience
+
+**React** → Component-based architecture, virtual DOM, hooks
+
+### Comparison: JavaScript vs TypeScript
+
+| Aspect | JavaScript | TypeScript |
+|--------|-----------|-------------|
+| Type Safety | Runtime errors only | Compile-time checking |
+| IDE Support | Basic autocomplete | Full IntelliSense |
+| Refactoring | Risky | Type-safe |
+| Documentation | Comments needed | Self-documenting |
+| Learning Curve | Low | Medium |
+| Debugging | Stack traces only | Source maps + types |
