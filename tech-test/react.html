@@ -6,20 +6,24 @@
     <meta name="description" content="A React-based task manager demonstrating hooks, components, and virtual DOM">
     <title>Task Manager - Test 5: React</title>
     <link rel="stylesheet" href="styles.css">
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- React 18 -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div style="padding: 2rem; text-align: center;">Loading React app...</div>
+    </div>
 
-    <script type="text/babel" data-presets="react,stage-3">
+    <script type="text/babel" data-presets="react">
         // ============================================
         // Task Manager - Test 5: React
         // Component-based architecture with hooks
         // ============================================
 
-        const { useState, useEffect, useMemo, useCallback, useRef, createContext, useContext } = React;
+        const { useState, useEffect, useMemo, useCallback, useRef } = React;
         const { createRoot } = ReactDOM;
 
         // ============================================
@@ -46,7 +50,7 @@
         function useLocalStorage(key, initialValue) {
             const [storedValue, setStoredValue] = useState(() => {
                 try {
-                    const item = localStorage.getItem(key);
+                    const item = window.localStorage.getItem(key);
                     return item ? JSON.parse(item) : initialValue;
                 } catch (error) {
                     console.error(`Error loading ${key}:`, error);
@@ -58,7 +62,7 @@
                 try {
                     const valueToStore = value instanceof Function ? value(storedValue) : value;
                     setStoredValue(valueToStore);
-                    localStorage.setItem(key, JSON.stringify(valueToStore));
+                    window.localStorage.setItem(key, JSON.stringify(valueToStore));
                 } catch (error) {
                     console.error(`Error saving ${key}:`, error);
                 }
@@ -68,99 +72,13 @@
         }
 
         // ============================================
-        // Custom Hook: useTaskManager
-        // ============================================
-
-        function useTaskManager() {
-            const [tasks, setTasks] = useLocalStorage(STORAGE_KEY, []);
-
-            const addTask = useCallback((text, priority = Priority.Normal) => {
-                const newTask = {
-                    id: Date.now(),
-                    text: text.trim(),
-                    completed: false,
-                    priority,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
-                };
-                setTasks(prev => [newTask, ...prev]);
-            }, []);
-
-            const deleteTask = useCallback((id) => {
-                setTasks(prev => prev.filter(task => task.id !== id));
-            }, []);
-
-            const toggleTask = useCallback((id) => {
-                setTasks(prev => prev.map(task => 
-                    task.id === id 
-                        ? { ...task, completed: !task.completed, updatedAt: new Date().toISOString() }
-                        : task
-                ));
-            }, []);
-
-            const editTask = useCallback((id, newText) => {
-                setTasks(prev => prev.map(task => 
-                    task.id === id && newText.trim()
-                        ? { ...task, text: newText.trim(), updatedAt: new Date().toISOString() }
-                        : task
-                ));
-            }, []);
-
-            const setPriority = useCallback((id, priority) => {
-                setTasks(prev => prev.map(task => 
-                    task.id === id
-                        ? { ...task, priority, updatedAt: new Date().toISOString() }
-                        : task
-                ));
-            }, []);
-
-            const clearCompleted = useCallback(() => {
-                setTasks(prev => prev.filter(task => !task.completed));
-            }, []);
-
-            const statistics = useMemo(() => {
-                const total = tasks.length;
-                const completed = tasks.filter(t => t.completed).length;
-                const active = total - completed;
-                const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-                return { total, completed, active, percentage };
-            }, [tasks]);
-
-            const filteredTasks = useCallback((filter) => {
-                switch (filter) {
-                    case 'active':
-                        return tasks.filter(t => !t.completed);
-                    case 'completed':
-                        return tasks.filter(t => t.completed);
-                    default:
-                        return tasks;
-                }
-            }, [tasks]);
-
-            return {
-                tasks,
-                addTask,
-                deleteTask,
-                toggleTask,
-                editTask,
-                setPriority,
-                clearCompleted,
-                statistics,
-                filteredTasks
-            };
-        }
-
-        // ============================================
         // Component: Header
         // ============================================
 
         function Header() {
-            return (
-                <header>
-                    <h1>📋 Task Manager</h1>
-                    <p>Test 5: React - Component-based architecture</p>
-                </header>
+            return React.createElement('header', null,
+                React.createElement('h1', null, '📋 Task Manager'),
+                React.createElement('p', null, 'Test 5: React - Component-based architecture')
             );
         }
 
@@ -175,8 +93,11 @@
             const handleSubmit = (e) => {
                 e.preventDefault();
                 if (input.trim()) {
-                    onAdd(input, Priority.Normal);
+                    onAdd(input);
                     setInput('');
+                    if (inputRef.current) {
+                        inputRef.current.focus();
+                    }
                 }
             };
 
@@ -186,29 +107,29 @@
                 }
             };
 
-            return (
-                <section aria-label="Add new task">
-                    <form onSubmit={handleSubmit}>
-                        <div className="input-group">
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                placeholder="What needs to be done? (Press Enter to add)"
-                                required
-                                autoComplete="off"
-                                aria-label="New task description"
-                            />
-                            <button type="submit">Add Task</button>
-                        </div>
-                    </form>
-                    <div className="shortcuts">
-                        <span className="shortcut">Esc</span> Clear input
-                        <span className="shortcut">Enter</span> Add task
-                    </div>
-                </section>
+            return React.createElement('section', { 'aria-label': 'Add new task' },
+                React.createElement('form', { onSubmit: handleSubmit },
+                    React.createElement('div', { className: 'input-group' },
+                        React.createElement('input', {
+                            ref: inputRef,
+                            type: 'text',
+                            value: input,
+                            onChange: (e) => setInput(e.target.value),
+                            onKeyDown: handleKeyDown,
+                            placeholder: 'What needs to be done? (Press Enter to add)',
+                            required: true,
+                            autoComplete: 'off',
+                            'aria-label': 'New task description'
+                        }),
+                        React.createElement('button', { type: 'submit' }, 'Add Task')
+                    )
+                ),
+                React.createElement('div', { className: 'shortcuts' },
+                    React.createElement('span', { className: 'shortcut' }, 'Esc'),
+                    ' Clear input ',
+                    React.createElement('span', { className: 'shortcut' }, 'Enter'),
+                    ' Add task'
+                )
             );
         }
 
@@ -217,18 +138,17 @@
         // ============================================
 
         function FilterControls({ filter, onFilterChange }) {
-            return (
-                <div className="task-controls">
-                    {['all', 'active', 'completed'].map(f => (
-                        <button
-                            key={f}
-                            className={`filter-btn ${filter === f ? 'active' : ''}`}
-                            onClick={() => onFilterChange(f)}
-                        >
-                            {f.charAt(0).toUpperCase() + f.slice(1)}
-                        </button>
-                    ))}
-                </div>
+            const filters = ['all', 'active', 'completed'];
+            return React.createElement('div', { className: 'task-controls' },
+                filters.map(f =>
+                    React.createElement('button', {
+                        key: f,
+                        className: `filter-btn ${filter === f ? 'active' : ''}`,
+                        onClick: () => onFilterChange(f)
+                    },
+                    f.charAt(0).toUpperCase() + f.slice(1)
+                )
+            )
             );
         }
 
@@ -236,9 +156,9 @@
         // Component: TaskItem
         // ============================================
 
-        function TaskItem({ task, onToggle, onDelete, onEdit, onPriorityChange, editingId, setEditingId }) {
+        function TaskItem({ task, onToggle, onDelete, onEdit, onPriorityChange }) {
+            const [isEditing, setIsEditing] = useState(false);
             const [editText, setEditText] = useState(task.text);
-            const isEditing = editingId === task.id;
             const editRef = useRef(null);
 
             useEffect(() => {
@@ -249,7 +169,7 @@
             }, [isEditing]);
 
             const handleEditStart = () => {
-                setEditingId(task.id);
+                setIsEditing(true);
                 setEditText(task.text);
             };
 
@@ -257,12 +177,12 @@
                 if (editText.trim()) {
                     onEdit(task.id, editText.trim());
                 }
-                setEditingId(null);
+                setIsEditing(false);
             };
 
             const handleEditCancel = () => {
-                setEditingId(null);
                 setEditText(task.text);
+                setIsEditing(false);
             };
 
             const handleKeyDown = (e) => {
@@ -275,81 +195,67 @@
                 }
             };
 
-            return (
-                <li 
-                    className={`${task.completed ? 'completed' : ''}`} 
-                    data-id={task.id}
-                    tabIndex={0}
-                >
-                    <div className="task-item-content">
-                        <div 
-                            className="task-priority" 
-                            style={{ backgroundColor: PriorityColors[task.priority] }}
-                        />
-                        <input
-                            type="checkbox"
-                            className="task-checkbox"
-                            checked={task.completed}
-                            onChange={() => onToggle(task.id)}
-                            aria-label={`Mark ${task.text} as ${task.completed ? 'incomplete' : 'complete'}`}
-                        />
-                        {isEditing ? (
-                            <input
-                                ref={editRef}
-                                type="text"
-                                value={editText}
-                                onChange={(e) => setEditText(e.target.value)}
-                                onBlur={handleEditSave}
-                                onKeyDown={handleKeyDown}
-                                className="task-edit-input"
-                                style={{
-                                    outline: '2px solid #007AFF',
-                                    background: 'white',
-                                    padding: '0.25rem 0.5rem',
-                                    borderRadius: '4px',
-                                    border: '2px solid #007AFF',
-                                    fontSize: '0.875rem'
-                                }}
-                            />
-                        ) : (
-                            <span 
-                                className={`task-item-text ${task.completed ? 'completed' : ''}`}
-                                onDoubleClick={handleEditStart}
-                            >
-                                {task.text}
-                            </span>
-                        )}
-                    </div>
-                    <div className="task-actions">
-                        {!isEditing && (
-                            <>
-                                <select
-                                    className="priority-select"
-                                    value={task.priority}
-                                    onChange={(e) => onPriorityChange(task.id, e.target.value)}
-                                >
-                                    <option value={Priority.Low}>Low</option>
-                                    <option value={Priority.Normal}>Normal</option>
-                                    <option value={Priority.High}>High</option>
-                                </select>
-                                <button 
-                                    className="edit-btn" 
-                                    onClick={handleEditStart}
-                                    title="Edit"
-                                >
-                                    ✏️
-                                </button>
-                            </>
-                        )}
-                        <button 
-                            className="delete-btn" 
-                            onClick={() => onDelete(task.id)}
-                            title="Delete"
-                        >
-                            🗑️
-                        </button>
-                    </div>
-                </li>
+            return React.createElement('li', {
+                className: task.completed ? 'completed' : '',
+                'data-id': task.id,
+                tabIndex: 0
+            },
+                React.createElement('div', { className: 'task-item-content' },
+                    React.createElement('div', {
+                        className: 'task-priority',
+                        style: { backgroundColor: PriorityColors[task.priority] }
+                    }),
+                    React.createElement('input', {
+                        type: 'checkbox',
+                        className: 'task-checkbox',
+                        checked: task.completed,
+                        onChange: () => onToggle(task.id),
+                        'aria-label': `Mark ${task.text} as ${task.completed ? 'incomplete' : 'complete'}`
+                    }),
+                    isEditing
+                        ? React.createElement('input', {
+                            ref: editRef,
+                            type: 'text',
+                            value: editText,
+                            onChange: (e) => setEditText(e.target.value),
+                            onBlur: handleEditSave,
+                            onKeyDown: handleKeyDown,
+                            className: 'task-edit-input',
+                            style: {
+                                outline: '2px solid #007AFF',
+                                background: 'white',
+                                padding: '0.25rem 0.5rem',
+                                borderRadius: '4px',
+                                border: '2px solid #007AFF',
+                                fontSize: '0.875rem'
+                            }
+                        })
+                        : React.createElement('span', {
+                            className: `task-item-text ${task.completed ? 'completed' : ''}`,
+                            onDoubleClick: handleEditStart
+                        }, task.text)
+                ),
+                React.createElement('div', { className: 'task-actions' },
+                    !isEditing && React.createElement('select', {
+                        className: 'priority-select',
+                        value: task.priority,
+                        onChange: (e) => onPriorityChange(task.id, e.target.value)
+                    },
+                        React.createElement('option', { value: Priority.Low }, 'Low'),
+                        React.createElement('option', { value: Priority.Normal }, 'Normal'),
+                        React.createElement('option', { value: Priority.High }, 'High')
+                    ),
+                    !isEditing && React.createElement('button', {
+                        className: 'edit-btn',
+                        onClick: handleEditStart,
+                        title: 'Edit'
+                    }, '✏️'),
+                    React.createElement('button', {
+                        className: 'delete-btn',
+                        onClick: () => onDelete(task.id),
+                        title: 'Delete'
+                    }, '🗑️')
+                )
             );
         }
 
@@ -357,39 +263,47 @@
         // Component: TaskList
         // ============================================
 
-        function TaskList({ tasks, onToggle, onDelete, onEdit, onPriorityChange }) {
-            const [editingId, setEditingId] = useState(null);
+        function TaskList({ tasks, onToggle, onDelete, onEdit, onPriorityChange, filter }) {
+            let filteredTasks = tasks;
+            switch (filter) {
+                case 'active':
+                    filteredTasks = tasks.filter(t => !t.completed);
+                    break;
+                case 'completed':
+                    filteredTasks = tasks.filter(t => t.completed);
+                    break;
+                default:
+                    filteredTasks = tasks;
+            }
 
-            if (tasks.length === 0) {
-                return (
-                    <ul>
-                        <li className="empty">
-                            {tasks === null 
-                                ? 'No tasks yet. Add one above!' 
-                                : tasks.filter(t => !t.completed).length === 0 && tasks.filter(t => t.completed).length > 0
-                                    ? 'No active tasks. Great job!'
-                                    : 'No completed tasks yet.'
-                            }
-                        </li>
-                    </ul>
+            const emptyMessages = {
+                all: 'No tasks yet. Add one above!',
+                active: 'No active tasks. Great job!',
+                completed: 'No completed tasks yet.'
+            };
+
+            if (filteredTasks.length === 0) {
+                return React.createElement('ul', null,
+                    React.createElement('li', { className: 'empty' },
+                        tasks.length === 0 ? emptyMessages.all :
+                        tasks.filter(t => !t.completed).length === 0 && tasks.filter(t => t.completed).length > 0
+                            ? emptyMessages.active
+                            : emptyMessages.completed
+                    )
                 );
             }
 
-            return (
-                <ul>
-                    {tasks.map(task => (
-                        <TaskItem
-                            key={task.id}
-                            task={task}
-                            onToggle={onToggle}
-                            onDelete={onDelete}
-                            onEdit={onEdit}
-                            onPriorityChange={onPriorityChange}
-                            editingId={editingId}
-                            setEditingId={setEditingId}
-                        />
-                    ))}
-                </ul>
+            return React.createElement('ul', null,
+                filteredTasks.map(task =>
+                    React.createElement(TaskItem, {
+                        key: task.id,
+                        task: task,
+                        onToggle: onToggle,
+                        onDelete: onDelete,
+                        onEdit: onEdit,
+                        onPriorityChange: onPriorityChange
+                    })
+                )
             );
         }
 
@@ -398,12 +312,10 @@
         // ============================================
 
         function TaskStats({ statistics }) {
-            return (
-                <div className="task-stats">
-                    <span className="stat-item">{statistics.active} active</span>
-                    <span className="stat-item">{statistics.completed} completed</span>
-                    <span className="stat-item">{statistics.percentage}% done</span>
-                </div>
+            return React.createElement('div', { className: 'task-stats' },
+                React.createElement('span', { className: 'stat-item' }, `${statistics.active} active`),
+                React.createElement('span', { className: 'stat-item' }, `${statistics.completed} completed`),
+                React.createElement('span', { className: 'stat-item' }, `${statistics.percentage}% done`)
             );
         }
 
@@ -412,10 +324,8 @@
         // ============================================
 
         function Footer() {
-            return (
-                <footer>
-                    <p>Next: Tailwind → Next.js → Node.js → Prisma</p>
-                </footer>
+            return React.createElement('footer', null,
+                React.createElement('p', null, 'Next: Tailwind → Next.js → Node.js → Prisma')
             );
         }
 
@@ -424,19 +334,56 @@
         // ============================================
 
         function App() {
+            const [tasks, setTasks] = useLocalStorage(STORAGE_KEY, []);
             const [filter, setFilter] = useState('all');
-            const {
-                tasks,
-                addTask,
-                deleteTask,
-                toggleTask,
-                editTask,
-                setPriority,
-                statistics,
-                filteredTasks
-            } = useTaskManager();
 
-            const currentTasks = useMemo(() => filteredTasks(filter), [filteredTasks, filter]);
+            const addTask = useCallback((text, priority = Priority.Normal) => {
+                const newTask = {
+                    id: Date.now(),
+                    text: text.trim(),
+                    completed: false,
+                    priority: priority,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                setTasks(prev => [newTask, ...prev]);
+            }, [setTasks]);
+
+            const deleteTask = useCallback((id) => {
+                setTasks(prev => prev.filter(task => task.id !== id));
+            }, [setTasks]);
+
+            const toggleTask = useCallback((id) => {
+                setTasks(prev => prev.map(task =>
+                    task.id === id
+                        ? { ...task, completed: !task.completed, updatedAt: new Date().toISOString() }
+                        : task
+                ));
+            }, [setTasks]);
+
+            const editTask = useCallback((id, newText) => {
+                setTasks(prev => prev.map(task =>
+                    task.id === id && newText.trim()
+                        ? { ...task, text: newText.trim(), updatedAt: new Date().toISOString() }
+                        : task
+                ));
+            }, [setTasks]);
+
+            const setTaskPriority = useCallback((id, priority) => {
+                setTasks(prev => prev.map(task =>
+                    task.id === id
+                        ? { ...task, priority, updatedAt: new Date().toISOString() }
+                        : task
+                ));
+            }, [setTasks]);
+
+            const statistics = useMemo(() => {
+                const total = tasks.length;
+                const completed = tasks.filter(t => t.completed).length;
+                const active = total - completed;
+                const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+                return { total, completed, active, percentage };
+            }, [tasks]);
 
             const handleClearCompleted = useCallback(() => {
                 const completedCount = tasks.filter(t => t.completed).length;
@@ -446,23 +393,22 @@
                 }
             }, [tasks]);
 
-            return (
-                <div className="container">
-                    <Header />
-                    <TaskForm onAdd={addTask} />
-                    <section aria-label="Task list">
-                        <FilterControls filter={filter} onFilterChange={setFilter} />
-                        <TaskList
-                            tasks={currentTasks}
-                            onToggle={toggleTask}
-                            onDelete={deleteTask}
-                            onEdit={editTask}
-                            onPriorityChange={setPriority}
-                        />
-                        <TaskStats statistics={statistics} />
-                    </section>
-                    <Footer />
-                </div>
+            return React.createElement('div', { className: 'container' },
+                React.createElement(Header),
+                React.createElement(TaskForm, { onAdd: addTask }),
+                React.createElement('section', { 'aria-label': 'Task list' },
+                    React.createElement(FilterControls, { filter: filter, onFilterChange: setFilter }),
+                    React.createElement(TaskList, {
+                        tasks: tasks,
+                        onToggle: toggleTask,
+                        onDelete: deleteTask,
+                        onEdit: editTask,
+                        onPriorityChange: setTaskPriority,
+                        filter: filter
+                    }),
+                    React.createElement(TaskStats, { statistics: statistics })
+                ),
+                React.createElement(Footer)
             );
         }
 
@@ -470,8 +416,24 @@
         // Render App
         // ============================================
 
-        const root = createRoot(document.getElementById('root'));
-        root.render(<App />);
+        try {
+            const rootElement = document.getElementById('root');
+            if (!rootElement) {
+                throw new Error('Root element not found');
+            }
+            const root = createRoot(rootElement);
+            root.render(React.createElement(App));
+            console.log('React app mounted successfully');
+        } catch (error) {
+            console.error('Failed to mount React app:', error);
+            document.getElementById('root').innerHTML = `
+                <div style="padding: 2rem; text-align: center; color: red;">
+                    <h2>Error loading React app</h2>
+                    <p>${error.message}</p>
+                    <p>Check browser console for details</p>
+                </div>
+            `;
+        }
     </script>
 
     <style>
