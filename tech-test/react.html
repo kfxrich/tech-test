@@ -9,15 +9,11 @@
     <!-- React 18 -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-    <div id="root">
-        <div style="padding: 2rem; text-align: center;">Loading React app...</div>
-    </div>
+    <div id="root"></div>
 
-    <script type="text/babel" data-presets="react">
+    <script>
         // ============================================
         // Task Manager - Test 5: React
         // Component-based architecture with hooks
@@ -27,7 +23,7 @@
         const { createRoot } = ReactDOM;
 
         // ============================================
-        // Constants & Types
+        // Constants
         // ============================================
 
         const STORAGE_KEY = 'task-manager-tasks-react';
@@ -38,9 +34,9 @@
         };
 
         const PriorityColors = {
-            [Priority.Low]: '#10b981',
-            [Priority.Normal]: '#3b82f6',
-            [Priority.High]: '#ef4444'
+            low: '#10b981',
+            normal: '#3b82f6',
+            high: '#ef4444'
         };
 
         // ============================================
@@ -93,11 +89,8 @@
             const handleSubmit = (e) => {
                 e.preventDefault();
                 if (input.trim()) {
-                    onAdd(input);
+                    onAdd(input, Priority.Normal);
                     setInput('');
-                    if (inputRef.current) {
-                        inputRef.current.focus();
-                    }
                 }
             };
 
@@ -195,6 +188,8 @@
                 }
             };
 
+            const priorityColor = PriorityColors[task.priority] || PriorityColors.normal;
+
             return React.createElement('li', {
                 className: task.completed ? 'completed' : '',
                 'data-id': task.id,
@@ -203,7 +198,7 @@
                 React.createElement('div', { className: 'task-item-content' },
                     React.createElement('div', {
                         className: 'task-priority',
-                        style: { backgroundColor: PriorityColors[task.priority] }
+                        style: { backgroundColor: priorityColor }
                     }),
                     React.createElement('input', {
                         type: 'checkbox',
@@ -227,7 +222,9 @@
                                 padding: '0.25rem 0.5rem',
                                 borderRadius: '4px',
                                 border: '2px solid #007AFF',
-                                fontSize: '0.875rem'
+                                fontSize: '0.875rem',
+                                width: '100%',
+                                fontFamily: 'inherit'
                             }
                         })
                         : React.createElement('span', {
@@ -385,14 +382,6 @@
                 return { total, completed, active, percentage };
             }, [tasks]);
 
-            const handleClearCompleted = useCallback(() => {
-                const completedCount = tasks.filter(t => t.completed).length;
-                if (completedCount > 0) {
-                    setTasks(prev => prev.filter(task => !task.completed));
-                    alert(`Cleared ${completedCount} completed tasks`);
-                }
-            }, [tasks]);
-
             return React.createElement('div', { className: 'container' },
                 React.createElement(Header),
                 React.createElement(TaskForm, { onAdd: addTask }),
@@ -450,6 +439,51 @@
         .task-item-text:hover {
             cursor: pointer;
             opacity: 0.8;
+        }
+
+        .task-priority {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            transition: background-color 150ms ease-in-out;
+        }
+
+        .task-item-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .priority-select {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            background: #f9fafb;
+            color: #1f2937;
+        }
+
+        .edit-btn {
+            padding: 0.5rem;
+            background: transparent;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 150ms ease-in-out;
+        }
+
+        .edit-btn:hover {
+            background: #f3f4f6;
+            transform: none;
         }
     </style>
 </body>
