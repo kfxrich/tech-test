@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 
 const STORAGE_KEY = 'task-manager-tasks-nextjs';
 
@@ -242,7 +242,7 @@ function TaskItem({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(task.text);
-  const editInputRef = React.useRef<HTMLInputElement>(null);
+  const editInputRef = useRef<HTMLInputElement>(null);
 
   // Focus and select edit input when editing starts
   React.useEffect(() => {
