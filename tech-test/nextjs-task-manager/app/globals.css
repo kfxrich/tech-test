@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Task Manager - Test 7: Next.js
+Full-stack React framework with Tailwind CSS
+*/
+
+.task-item-text:focus {
+  outline: none;
+}
+
+.task-edit-input {
+  font-family: inherit;
+}
