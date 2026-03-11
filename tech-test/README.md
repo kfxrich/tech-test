@@ -5,72 +5,114 @@
 ## Test 3: JavaScript ✅
 ## Test 4: TypeScript ✅
 ## Test 5: React ✅
+## Test 6: Tailwind CSS ✅
 
-### What's Tested (React)
+### What's Tested (Tailwind CSS)
 
-**React Architecture:**
-- Component-based architecture
-- React Hooks (useState, useEffect, useMemo, useCallback, useRef)
-- Custom hooks for reusability
-- Virtual DOM for performance
-- Declarative UI patterns
+**Tailwind Architecture:**
+- Utility-first CSS framework
+- JIT (Just-In-Time) compiler via CDN
+- Custom theme configuration
+- Responsive-first design
+- Dark mode support (prefers-color-scheme)
 
-**React Features Demonstrated:**
+**Tailwind Features Demonstrated:**
 
-**Core Hooks:**
-- `useState` — Component state management
-- `useEffect` — Side effects and lifecycle
-- `useMemo` — Memoized computations
-- `useCallback` — Optimized event handlers
-- `useRef` — DOM references and persisting values
+**Utility Classes:**
+- Layout: `flex`, `grid`, `block`, `hidden`
+- Spacing: `p-4`, `m-2`, `gap-3`, `space-y-2`
+- Colors: `bg-gray-100`, `text-gray-900`, `bg-primary-600`
+- Typography: `text-sm`, `font-medium`, `font-sans`
+- Sizing: `w-full`, `max-w-lg`, `h-3`, `w-5`
+- Borders: `border`, `rounded-lg`, `border-2`
+- Shadows: `shadow-lg`
+- Transitions: `transition-all`, `duration-150`
 
-**Custom Hooks:**
-- `useLocalStorage` — Persistent state with localStorage
-- `useTaskManager` — Task management logic encapsulation
+**Responsive Utilities:**
+- `max-w-lg` (max-width: 32rem)
+- `max-h-[500px]` (custom height)
+- Mobile-first breakpoints (default, md, lg)
+- Flexbox for responsive layouts
 
-**Component Structure:**
-- `<App>` — Main container component
-- `<Header>` — Header display
-- `<TaskForm>` — Add new tasks
-- `<FilterControls>` — Filter tabs
-- `<TaskList>` — Task list container
-- `<TaskItem>` — Individual task
-- `<TaskStats>` — Statistics display
-- `<Footer>` — Footer
-
-**React Patterns:**
-- State lifting (child to parent communication)
-- Props drilling (controlled components)
-- Conditional rendering
-- List rendering with keys
-- Event handling with React
-- Double-click to edit pattern
-
-**Performance Optimizations:**
-- `useCallback` — Prevent unnecessary re-renders
-- `useMemo` — Cache expensive computations
-- Component memoization opportunities
-- Key props for list items
-
-**Declarative vs Imperative:**
-
-**Before (Imperative - JavaScript/TypeScript):**
+**Custom Theme:**
 ```javascript
-const li = document.querySelector(`li[data-id="${id}"]`);
-li.classList.add('completed');
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: { 50: '#eff6ff', ..., 500: '#3b82f6', ... },
+        danger: { 50: '#fef2f2', ..., 500: '#ef4444', ... },
+        success: { 50: '#ecfdf5', ..., 500: '#10b981', ... }
+      }
+    }
+  }
+}
 ```
 
-**After (Declarative - React):**
-```jsx
-<TaskItem completed={task.completed} />
+**Dark Mode Support:**
+```css
+@media (prefers-color-scheme: dark) {
+  .bg-gray-50 { background-color: #1f2937; }
+  .text-gray-900 { color: #f9fafb; }
+}
 ```
 
-**React-Specific Features:**
-- Double-click to edit tasks
-- Auto-focus edit input
-- Enter to save, Escape to cancel
-- Real-time statistics updates
-- Optimized re-renders
+**State Variants:**
+- `hover:bg-gray-200` — Hover states
+- `focus:outline-none` — Remove default outline
+- `focus:ring-4` — Focus rings
+- `active:scale-95` — Active/click state
+- `data-active:bg-primary-600` — Dynamic active states
+
+**Tailwind vs Custom CSS:**
+
+| Aspect | Custom CSS | Tailwind |
+|--------|-----------|----------|
+| **Approach** | Write CSS classes | Use utility classes |
+| **File Size** | Larger (unused styles) | Smaller (JIT purges unused) |
+| **Naming** | Custom names | Standard utilities |
+| **Consistency** | Manual | Built-in |
+| **Maintenance** | Need to update CSS | No CSS files needed |
+| **Development** | Write, reload | Write HTML, works |
+| **Learning Curve** | CSS basics | Utility classes |
+
+**Tailwind Advantages:**
+- **Rapid Development** — No switching between HTML and CSS
+- **Consistency** — Standardized design tokens
+- **Responsive** — Built-in breakpoints
+- **No Build Step** — CDN version for prototyping
+- **Customizable** — Tailwind config
+- **Production-Ready** — Purges unused CSS
+
+**Utility Classes Examples:**
+
+```html
+<!-- Spacing -->
+<div class="p-4 mb-2">...</div>
+
+<!-- Flexbox -->
+<div class="flex items-center justify-between gap-4">...</div>
+
+<!-- Colors & Backgrounds -->
+<div class="bg-gray-50 text-gray-900">...</div>
+
+<!-- Borders & Radius -->
+<div class="border border-gray-200 rounded-lg">...</div>
+
+<!-- Transitions -->
+<div class="transition-all duration-150 hover:bg-gray-200">...</div>
+
+<!-- Focus States -->
+<button class="focus:outline-none focus:ring-4 focus:ring-primary-500/20">...</button>
+
+<!-- Active States -->
+<button class="active:scale-95">...</button>
+
+<!-- Dark Mode Support -->
+@media (prefers-color-scheme: dark) {
+  .bg-gray-50 { background-color: #1f2937; }
+}
+```
 
 ### How to View
 
@@ -79,63 +121,49 @@ li.classList.add('completed');
 git clone https://github.com/kfxrich/tech-test.git
 cd tech-test
 
-# Open React version in browser
-open react.html
+# Open Tailwind version in browser
+open tailwind.html
 ```
 
-### React Dependencies (CDN)
-
-```html
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-```
-
-### React File Structure
+### File Structure
 
 ```
-react.html (Single-file React app)
-├── Components
-│   ├── App
-│   ├── Header
-│   ├── TaskForm
-│   ├── FilterControls
-│   ├── TaskList
-│   ├── TaskItem
-│   ├── TaskStats
-│   └── Footer
-├── Custom Hooks
-│   ├── useLocalStorage
-│   └── useTaskManager
-└── Main Logic
-    └── createRoot + render
+tech-test/
+├── tailwind.html        # Single-file Tailwind app
+├── react.html          # React version
+├── index.html          # Original vanilla JS version
+├── src/
+│   └── app.ts       # TypeScript source
+├── dist/
+│   └── app.js       # Compiled JavaScript
+├── styles.css          # Custom CSS version
+├── tsconfig.json       # TypeScript config
+└── README.md          # Documentation
 ```
 
-### Key React Concepts Demonstrated
+### Tailwind Configuration
 
-| Concept | Description | Implementation |
-|----------|-------------|----------------|
-| **State** | Component state | `useState` hook |
-| **Effects** | Side effects | `useEffect` hook |
-| **Memoization** | Performance | `useMemo`, `useCallback` |
-| **Refs** | DOM access | `useRef` hook |
-| **Custom Hooks** | Logic reuse | `useLocalStorage`, `useTaskManager` |
-| **Props** | Data flow | Props drilling |
-| **Events** | User interaction | React event handlers |
-| **Keys** | List optimization | `key={task.id}` |
+The CDN version uses `tailwind.config` in the HTML to customize:
+- Custom color palette (primary, danger, success)
+- Custom font family
+- Custom breakpoints (if needed)
 
 ### Next Test
 
-**Tailwind CSS** → Utility-first styling, rapid development, responsive design
+**Next.js** — Full-stack React framework with:
+- SSR/SSG (Server-Side Rendering/Static Generation)
+- File-based routing
+- API routes
+- Server components
+- Optimization out of the box
 
-### Comparison: JavaScript/TypeScript vs React
+### Comparison: All Tests So Far
 
-| Aspect | JS/TS | React |
-|--------|----------|-------|
-| **UI Updates** | Manual DOM manipulation | Declarative, automatic |
-| **State** | Variables + manual updates | `useState` hook |
-| **Components** | Functions | JSX components |
-| **Reusability** | Functions | Custom hooks + components |
-| **Learning Curve** | Lower | Higher |
-| **Performance** | Manual optimization | Virtual DOM + automatic |
-| **Tooling** | Simple | Build tools (Vite, CRA, Next) |
+| Test | Tech | Key Concepts | File |
+|-------|-------|--------------|-------|
+| 1 | HTML | Semantic structure, forms, accessibility | `index.html` |
+| 2 | CSS | Variables, flexbox, responsive | `styles.css` |
+| 3 | JavaScript | LocalStorage, events, DOM | `index.html` (script) |
+| 4 | TypeScript | Types, interfaces, type guards | `src/app.ts` |
+| 5 | React | Components, hooks, virtual DOM | `react.html` |
+| 6 | Tailwind CSS | Utility classes, JIT, dark mode | `tailwind.html` |
