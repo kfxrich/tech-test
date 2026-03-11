@@ -1,0 +1,382 @@
+/* ============================================
+   Task Manager - Test 2: CSS
+   Responsive, accessible, polished styling
+   ============================================ */
+
+/* CSS Custom Properties (Variables) */
+:root {
+    --color-primary: #007AFF;
+    --color-primary-hover: #0056b3;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-success: #10b981;
+    --color-success-hover: #059669;
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #6b7280;
+    --color-text-muted: #9ca3af;
+    --color-bg-primary: #f9fafb;
+    --color-bg-card: #ffffff;
+    --color-bg-hover: #f3f4f6;
+    --color-border: #e5e7eb;
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+
+    --font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+    --transition-fast: 150ms ease-in-out;
+    --transition-normal: 250ms ease-in-out;
+}
+
+/* Reset & Base Styles */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-family);
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+/* Container */
+.container {
+    width: 100%;
+    max-width: 600px;
+    background: var(--color-bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+/* Header */
+header {
+    padding: 2rem 2rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    opacity: 0.9;
+    font-size: 0.875rem;
+}
+
+/* Form Section */
+section[aria-label="Add new task"] {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.input-group {
+    display: flex;
+    gap: 0.75rem;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--color-text-primary);
+    background: var(--color-bg-primary);
+    transition: all var(--transition-fast);
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+input[type="text"]::placeholder {
+    color: var(--color-text-muted);
+}
+
+button {
+    padding: 0.75rem 1.5rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: inherit;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+button:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+}
+
+/* Task List Section */
+section[aria-label="Task list"] {
+    padding: 1rem 2rem 2rem;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+ul {
+    list-style: none;
+}
+
+/* Task Items */
+li {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    background: var(--color-bg-primary);
+    border-radius: var(--radius-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    transition: all var(--transition-normal);
+    border: 1px solid transparent;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+li:hover {
+    background: var(--color-bg-hover);
+    border-color: var(--color-border);
+    transform: translateX(4px);
+}
+
+li.task-item-text {
+    flex: 1;
+    font-size: 0.875rem;
+    word-break: break-word;
+}
+
+/* Empty State */
+.empty {
+    color: var(--color-text-muted);
+    font-style: italic;
+    text-align: center;
+    padding: 3rem 1rem;
+    background: transparent;
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+/* Delete Button */
+.delete-btn {
+    padding: 0.5rem 1rem;
+    background: var(--color-danger);
+    font-size: 0.875rem;
+    border-radius: var(--radius-sm);
+}
+
+.delete-btn:hover {
+    background: var(--color-danger-hover);
+}
+
+/* Complete Button (for future feature) */
+.complete-btn {
+    padding: 0.5rem 1rem;
+    background: var(--color-success);
+    font-size: 0.875rem;
+    border-radius: var(--radius-sm);
+}
+
+.complete-btn:hover {
+    background: var(--color-success-hover);
+}
+
+/* Completed Task Style */
+.completed {
+    opacity: 0.6;
+    text-decoration: line-through;
+}
+
+/* Footer */
+footer {
+    padding: 1rem 2rem;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-primary);
+    text-align: center;
+}
+
+footer p {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem 0.5rem;
+    }
+
+    header {
+        padding: 1.5rem 1.5rem 1rem;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    section[aria-label="Add new task"],
+    section[aria-label="Task list"] {
+        padding: 1rem 1.5rem;
+    }
+
+    footer {
+        padding: 0.75rem 1.5rem;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    html {
+        font-size: 14px;
+    }
+
+    header h1 {
+        font-size: 1.25rem;
+    }
+
+    header p {
+        font-size: 0.75rem;
+    }
+
+    .input-group {
+        flex-direction: column;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    li {
+        padding: 0.75rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    li .delete-btn,
+    li .complete-btn {
+        width: 100%;
+    }
+
+    section[aria-label="Task list"] {
+        padding: 1rem;
+    }
+}
+
+/* ============================================
+   Accessibility Enhancements
+   ============================================ */
+
+/* Focus visible for keyboard navigation */
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --color-border: #000000;
+        --color-text-secondary: #000000;
+    }
+}
+
+/* Print styles */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+
+    header {
+        background: white;
+        color: black;
+        border-bottom: 2px solid black;
+    }
+
+    .input-group,
+    .delete-btn,
+    footer {
+        display: none;
+    }
+
+    section[aria-label="Task list"] {
+        max-height: none;
+        overflow: visible;
+    }
+
+    li {
+        border: 1px solid black;
+        page-break-inside: avoid;
+    }
+}
