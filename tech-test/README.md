@@ -2,56 +2,94 @@
 
 ## Test 1: HTML ✅
 ## Test 2: CSS ✅
+## Test 3: JavaScript ✅
 
-### What's Tested (CSS)
+### What's Tested (JavaScript)
 
-**CSS Architecture:**
-- CSS Custom Properties (variables) for theming
-- Organized sections with clear comments
-- Mobile-first responsive design
-- Accessibility-first approach
+**JavaScript Architecture:**
+- State management with in-memory state
+- Local storage persistence
+- Event-driven architecture
+- Modular function design
+- Clean separation of concerns
 
-**CSS Features Demonstrated:**
-- Custom properties (colors, shadows, radius, transitions)
-- Flexbox layouts
-- CSS animations (slideIn keyframes)
-- Transitions and hover states
-- Media queries (768px, 480px breakpoints)
-- Print styles
-- Reduced motion support
-- High contrast mode support
-- Focus states for accessibility
+**JavaScript Features Demonstrated:**
 
-**Styling Polish:**
-- Gradient header background
-- Box shadows with multiple layers
-- Rounded corners with radius tokens
-- Smooth hover animations
-- Empty state with dashed border
-- Typography hierarchy
-- Spacing system
+**State Management:**
+- Centralized `tasks` array
+- Filter state (`all`, `active`, `completed`)
+- Reactive rendering pattern
 
-**Responsive Breakpoints:**
-- Desktop: > 768px (default)
-- Tablet: ≤ 768px
-- Mobile: ≤ 480px
+**Local Storage:**
+- Save tasks to `localStorage`
+- Load tasks on page load
+- Graceful error handling for quota exceeded
 
-**Accessibility Features:**
-- Focus-visible styling for keyboard navigation
-- ARIA labels and landmarks
-- Color contrast considerations
-- Reduced motion support
-- High contrast mode support
-- Print-friendly layout
+**Task Operations:**
+- `addTask(text)` — Create new task
+- `deleteTask(id)` — Remove task
+- `toggleTask(id)` — Mark complete/incomplete
+- `editTask(id, newText)` — Update task text
+- `clearCompleted()` — Bulk delete completed tasks
+
+**Rendering System:**
+- Filter-based task display
+- Dynamic HTML generation with template literals
+- Real-time statistics (active, completed, percentage)
+- Empty state messages
+
+**Keyboard Shortcuts:**
+- `Enter` — Add task
+- `Escape` — Clear input
+- `↑/↓` — Navigate tasks (tab index 0)
+- `Enter/Space` — Toggle checkbox
+- `E` — Edit task
+- `D` — Delete task
+
+**Edit Functionality:**
+- Inline editing with `contenteditable`
+- Save on Enter or blur
+- Cancel on Escape
+- Select all text on edit start
+
+**UI Features:**
+- Toast notifications
+- Filter buttons (All, Active, Completed)
+- Task statistics footer
+- Checkbox for completion
+- Edit and delete buttons per task
+
+**Event Listeners:**
+- Form submit
+- Keyboard shortcuts (document-level)
+- Filter buttons
+- Task list interactions
+- Edit mode handling
+
+**Security:**
+- XSS protection via `escapeHtml()` function
+- Input validation and sanitization
+
+**Performance:**
+- Efficient DOM updates (batched re-renders)
+- Local storage for instant load
+- Minimal reflows/repaints
+
+### Keyboard Shortcuts Reference
+
+| Key | Action |
+|-----|--------|
+| `Enter` | Add task / Toggle completion |
+| `Escape` | Clear input / Cancel edit |
+| `E` | Edit focused task |
+| `D` | Delete focused task |
 
 ### How to View
 ```bash
-# Copy both files to your local machine:
-# 1. index.html
-# 2. styles.css
-
-# Place them in the same folder, then open index.html in your browser
+git clone https://github.com/kfxrich/tech-test.git
+cd tech-test/tech-test
+open index.html
 ```
 
 ### Next Test
-**JavaScript** → Enhanced interactivity, local storage, keyboard shortcuts, drag-and-drop
+**TypeScript** → Add type safety, interfaces, better developer experience
