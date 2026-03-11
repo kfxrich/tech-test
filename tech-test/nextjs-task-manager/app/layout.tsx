@@ -1,3 +1,5 @@
+import './globals.css';
+
 export const metadata = {
   title: 'Task Manager - Next.js',
   description: 'Task Manager built with Next.js 14 - Full-stack React framework',
